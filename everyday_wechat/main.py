@@ -11,13 +11,16 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import itchat
 import random
 from itchat.content import *
+import sys
+sys.path.append("..") # 引入上一级目录
 from everyday_wechat.utils.common import get_yaml
 from everyday_wechat.utils.data_collection import (
     get_bot_info,
     get_weather_info,
     get_dictum_info,
     get_diff_time,
-    get_xzw_info
+    get_xzw_info,
+    get_joke_info,
 )
 
 reply_userNames = []
@@ -164,7 +167,7 @@ def text_reply(msg):
             time.sleep(random.randint(0, 2))  # 休眠一秒，保安全。想更快的，可以直接注释。
             if reply_text:  # 如内容不为空，回复消息
                 reply_text = reply_text if not uuid == FILEHELPER else '机器人回复：' + reply_text
-                itchat.send(reply_text, toUserName=uuid)
+                itchat.send('机器人回复：' + reply_text, toUserName=uuid)
                 print('回复{}：{}\n'.format(nickName, reply_text))
             else:
                 print('自动回复失败\n'.format(receive_text))
@@ -182,8 +185,9 @@ def send_alarm_msg():
         diff_time = get_diff_time(gf.get('start_date'))
         sweet_words = gf.get('sweet_words')
         horoscope = get_xzw_info(gf.get("birthday"))
+        joke = get_joke_info(gf.get('is_joke', False))
 
-        send_msg = '\n'.join(x for x in [weather, dictum, diff_time, sweet_words, horoscope] if x)
+        send_msg = '\n'.join(x for x in [weather, "\r", dictum, "\r", diff_time, sweet_words, horoscope, "\r", "分享一个段子吧~\r\n" + joke] if x)
         print(send_msg)
 
         if not send_msg or not is_online(): continue

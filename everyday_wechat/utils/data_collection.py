@@ -4,6 +4,7 @@ import importlib
 from datetime import datetime
 
 from everyday_wechat.control.weather.rtweather import get_today_weather
+from everyday_wechat.control.joke.randomJoke import get_random_joke
 from everyday_wechat.utils.common import (
     get_yaml
 )
@@ -40,6 +41,18 @@ def get_weather_info(cityname):
     return get_today_weather(cityname)
     # return get_rttodayweather(cityname)
 
+def get_joke_info(is_joke):
+    """
+    获取段子
+    :param is_joke: boolean,是否获取段子
+    :return: str,天气情况
+    """
+    if not is_joke:
+        return
+    return get_random_joke()
+
+
+
 
 def get_bot_info(message, userId=''):
     """
@@ -73,7 +86,7 @@ def get_diff_time(start_date):
     try:
         start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
         day_delta = (datetime.now() - start_datetime).days + 1
-        delta_msg = '宝贝这是我们在一起的第 {} 天。'.format(day_delta)
+        delta_msg = '今天是我们在一起的第 {} 天。'.format(day_delta)
     except Exception as exception:
         print(exception)
         delta_msg = None
