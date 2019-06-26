@@ -45,7 +45,7 @@ alarm_info:
   #True 开启定时提醒，False 关闭
   is_alarm: True
   #定时发送时间
-  alarm_timed: '00:59'
+  alarm_timed: '01:13'
 
 girlfriend_infos:
   - #女友微信昵称或者备注名，不能输入微信号。（如填：文件传输助手，发消息到文件传输助手，测试效果）
@@ -65,12 +65,13 @@ girlfriend_infos:
 
 #  如果你有多个好友需要发送，则参照这个样式，复制即可
 ##  如不需要，则删除或注解下面所有的数据
-#  - group_name: 'AquamanAAAAAA' # 群聊名称，必须要把需要的群聊保存到通讯录。
+  - group_name: '三男一狗（狗在老家）' # 群聊名称，必须要把需要的群聊保存到通讯录。
 #    wechat_name: '古典'
-#    city_name: '漳州'
-#    dictum_channel : 4
+    city_name: '上海'
+    dictum_channel : 6
 #    start_date: '2019-6-15'
-#    sweet_words: '名字写在水上的人'
+    sweet_words: '陈'
 #    birthday: "1980-06-15"
+
 
 

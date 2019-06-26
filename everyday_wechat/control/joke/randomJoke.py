@@ -34,7 +34,7 @@ def get_randomJokes():
                 data_dict = resp.json()['data']
                 content = data_dict[0]['content'].strip()
                 return_text = content
-                return return_text
+                return "分享一个段子吧~\r\n" + return_text
             else:
                 print('获取段子失败:{}'.format(resp.json()['msg']))
                 # return None
