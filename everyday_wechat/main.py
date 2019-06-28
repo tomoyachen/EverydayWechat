@@ -193,7 +193,8 @@ def send_alarm_msg():
         horoscope = get_xzw_info(gf.get("birthday"))
         joke = get_joke_info(gf.get('is_joke', False))
         # 如果渠道是一个·ONE 就发图片
-        send_image_path = get_one_image(gf.get('dictum_channel'))
+        # send_image_path = get_one_image(gf.get('dictum_channel'))
+        send_image_path = get_one_image(1) #强制发one图片
 
         send_msg = '\n'.join(x for x in [weather, "\r", dictum, "\r", diff_time, sweet_words, "\r", horoscope] if x)
         print(send_msg)
@@ -216,7 +217,7 @@ def send_alarm_msg():
                     wechat_users[0].send_image(send_image_path)
                 wechat_users[0].send(send_msg)
                 if joke:
-                    wechat_users[0].send(joke, toUserName=FILEHELPER)
+                    wechat_users[0].send(joke)
                 print('定时给『{}』发送的内容是:\n{}\n发送成功...\n\n'.format(wechat_name, send_msg))
 
         # 给群聊里发信息
@@ -228,7 +229,7 @@ def send_alarm_msg():
                     group.send_image(send_image_path)
                 group.send(send_msg)
                 if joke:
-                    group.send(joke, toUserName=FILEHELPER)
+                    group.send(joke)
                 print('定时给群聊『{}』发送的内容是:\n{}\n发送成功...\n\n'.format(group_name, send_msg))
 
     print('自动提醒消息发送完成...\n')
