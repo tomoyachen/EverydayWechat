@@ -14,61 +14,48 @@ SPIDER_HEADERS = {
 
 
 
-def get_wufazhuce_info():
+def get_rttodayweather(cityname):
     """
-    获取格言信息（从『一个。one』获取信息 http://wufazhuce.com/）
-    :return: str， 一句格言或者短语。
+    获取特定城市今日天气
+     https://github.com/MZCretin/RollToolsApi#获取特定城市今日天气
+    :param cityname: 传入你需要查询的城市，请尽量传入完整值，否则系统会自行匹配，可能会有误差
+    :return:天气(2019-06-12 星期三 晴 南风 3-4级 高温 22.0℃ 低温 18.0℃ 愿你拥有比阳光明媚的心情)
     """
-    print('获取 ONE 信息...')
-    user_url = 'http://wufazhuce.com/'
+    print('获取 {} 的天气...'.format(cityname))
     try:
-        resp = requests.get(user_url, headers=SPIDER_HEADERS)
+        resp = requests.get('https://www.mxnzp.com/api/weather/current/{}'.format(cityname))
+        # print(resp.text)
+        '''
+        # {"code":1,"msg":"数据返回成功","data":{"address":"广西壮族自治区 桂林市 全州县",
+        # "cityCode":"450324","temp":"26℃","weather":"晴","windDirection":"东北","windPower":"≤3级",
+        # "humidity":"58%","reportTime":"2019-06-14 10:49:37"}}
+        '''
         if resp.status_code == 200:
-            soup_texts = BeautifulSoup(resp.text, 'lxml')
-
-            # 『one -个』 中的每日一句
-            # every_msg = soup_texts.find_all('div', class_='fp-one-cita')[0].find('a').text
-            every_msg = soup_texts.find('div', class_='fp-one-cita').text #只取当天的这句
-            print("一个·ONE文字内容", every_msg.strip())
-            return every_msg
-        print('获取 ONE 失败。')
+            if resp.json()['code'] == 1:
+                data_dict = resp.json()['data']
+                address = data_dict['address'].strip()
+                if ' ' in address:
+                    address = address.split(' ')[-1]
+                reportTime = data_dict['reportTime'].strip()
+                reportTime = reportTime.split(' ')[0]
+                reportTime = reportTime.split('-')
+                reportTime = "%s年%s月%s日" %(reportTime[0], reportTime[1], reportTime[2])
+                '''
+                return_text = ' '.join(
+                    x for x in [reportTime, address, data_dict['weather'], data_dict['temp'] + "\r\n",
+                                data_dict['windDirection'] + '风', data_dict['windPower'],
+                                '湿度：' + data_dict['humidity']] if x)
+                '''
+                return_text = "%s %s %s %s" %(reportTime, address, data_dict['weather'], data_dict['temp'])
+                # print(return_text)
+                return return_text
+            else:
+                print('获取天气失败:{}'.format( resp.json()['msg']))
+                # return None
+        print('获取天气失败。')
     except Exception as exception:
         print(exception)
-        return None
-    return None
+        # return None
+    # return None
 
-
-
-
-def get_wufazhuce_image():
-    """
-    获取格言信息（从『一个。one』获取信息 http://wufazhuce.com/）
-    :return: str， 一句格言或者短语。
-    """
-    print('获取 ONE 信息...')
-    user_url = 'http://wufazhuce.com/'
-    try:
-        resp = requests.get(user_url, headers=SPIDER_HEADERS)
-        if resp.status_code == 200:
-            soup_texts = BeautifulSoup(resp.text, 'lxml')
-            # 『one -个』 中的每日一句
-            # every_msg = soup_texts.find_all('div', class_='fp-one-cita')[0].find('a').text
-            every_msg = soup_texts.find('img', class_='fp-one-imagen')["src"]  #只取图片地址
-            print ("一个·ONE图片地址", every_msg)
-            return every_msg
-        print('获取 ONE 失败。')
-    except Exception as exception:
-        print(exception)
-        return None
-    return None
-
-get_one_words = get_wufazhuce_info
-get_one_image = get_wufazhuce_image
-print(get_wufazhuce_info())
-print(get_one_image())
-
-image_url = get_one_image()
-response = requests.get(image_url)
-img = response.content
-with open('D:\one_today_image.jpg', 'wb') as f:
-    f.write(img)
+print(get_rttodayweather("上海"))

@@ -29,6 +29,9 @@ def get_rttodayweather(cityname):
                     address = address.split(' ')[-1]
                 reportTime = data_dict['reportTime'].strip()
                 reportTime = reportTime.split(' ')[0]
+                reportTime = reportTime.split('-')
+                reportTime = "%s年%s月%s日" %(reportTime[0], reportTime[1], reportTime[2])
+
                 '''
                 return_text = ' '.join(
                     x for x in [reportTime, address, data_dict['weather'], data_dict['temp'] + "\r\n",
