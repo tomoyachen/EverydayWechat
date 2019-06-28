@@ -6,3 +6,4 @@ pyyaml
 lxml
 simplejson
 requests-html
+urllib

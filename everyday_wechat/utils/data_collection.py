@@ -1,6 +1,8 @@
 # coding=utf-8
 
 import importlib
+import requests
+import os
 from datetime import datetime
 
 from everyday_wechat.control.weather.rtweather import get_today_weather
@@ -29,6 +31,27 @@ def get_dictum_info(channel):
         return dictum
     return None
 
+def get_one_image(channel):
+    """
+    获取one图片。
+    :return:str
+    """
+    if not channel or channel != 1:
+        return None
+    source = DICTUM_NAME_DICT.get(channel, '')
+    if source:
+        addon = importlib.import_module('everyday_wechat.control.onewords.' + source, __package__)
+        dictum = addon.get_one_image()
+        # print(dictum)
+        response = requests.get(dictum)
+        img = response.content
+        with open('./one_today_image.jpg', 'wb') as f:
+            f.write(img)
+        if os.path.isfile("./one_today_image.jpg"):
+            dictum = "./one_today_image.jpg"
+
+        return dictum
+    return None
 
 def get_weather_info(cityname):
     """
@@ -49,7 +72,7 @@ def get_joke_info(is_joke):
     """
     if not is_joke:
         return
-    return get_random_joke()
+    return "分享一个段子吧~\r\n" + get_random_joke()
 
 
 
@@ -86,7 +109,7 @@ def get_diff_time(start_date):
     try:
         start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
         day_delta = (datetime.now() - start_datetime).days + 1
-        delta_msg = '今天是我们在一起的第 {} 天。'.format(day_delta)
+        delta_msg = '今天是我们认识的第 {} 天。'.format(day_delta)
     except Exception as exception:
         print(exception)
         delta_msg = None

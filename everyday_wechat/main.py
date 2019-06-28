@@ -21,6 +21,7 @@ from everyday_wechat.utils.data_collection import (
     get_diff_time,
     get_xzw_info,
     get_joke_info,
+    get_one_image,
 )
 
 reply_userNames = []
@@ -165,9 +166,14 @@ def text_reply(msg):
             print('\n{}发来信息：{}'.format(nickName, receive_text))
             reply_text = get_bot_info(receive_text, uuid)  # 获取自动回复
             time.sleep(random.randint(0, 2))  # 休眠一秒，保安全。想更快的，可以直接注释。
-            if reply_text:  # 如内容不为空，回复消息
+            if receive_text == "test":
+                reply_text = "./one_today_image.jpg"  # 获取自动回复
+                # reply_text = "D:\\sss.jpg"  # 获取自动回复
+                itchat.send_image(reply_text, toUserName=uuid)
+                print('回复图片{}：{}\n'.format(nickName, reply_text))
+            elif reply_text:  # 如内容不为空，回复消息
                 reply_text = reply_text if not uuid == FILEHELPER else '机器人回复：' + reply_text
-                itchat.send('机器人回复：' + reply_text, toUserName=uuid)
+                itchat.send(reply_text, toUserName=uuid)
                 print('回复{}：{}\n'.format(nickName, reply_text))
             else:
                 print('自动回复失败\n'.format(receive_text))
@@ -186,8 +192,10 @@ def send_alarm_msg():
         sweet_words = gf.get('sweet_words')
         horoscope = get_xzw_info(gf.get("birthday"))
         joke = get_joke_info(gf.get('is_joke', False))
+        # 如果渠道是一个·ONE 就发图片
+        send_image_path = get_one_image(gf.get('dictum_channel'))
 
-        send_msg = '\n'.join(x for x in [weather, "\r", dictum, "\r", diff_time, sweet_words, horoscope, "\r", joke] if x)
+        send_msg = '\n'.join(x for x in [weather, "\r", dictum, "\r", diff_time, sweet_words, "\r", horoscope] if x)
         print(send_msg)
 
         if not send_msg or not is_online(): continue
@@ -195,12 +203,20 @@ def send_alarm_msg():
         wechat_name = gf.get('wechat_name')
         if wechat_name:
             if wechat_name.lower() in FILEHELPER_MARK:
+                if send_image_path:
+                    itchat.send_image(send_image_path, toUserName=FILEHELPER)
                 itchat.send(send_msg, toUserName=FILEHELPER)
+                if joke:
+                    itchat.send(joke, toUserName=FILEHELPER)
                 print('定时给『{}』发送的内容是:\n{}\n发送成功...\n\n'.format(wechat_name, send_msg))
             else:
                 wechat_users = itchat.search_friends(name=wechat_name)
                 if not wechat_users: continue
+                if send_image_path:
+                    wechat_users[0].send_image(send_image_path)
                 wechat_users[0].send(send_msg)
+                if joke:
+                    wechat_users[0].send(joke, toUserName=FILEHELPER)
                 print('定时给『{}』发送的内容是:\n{}\n发送成功...\n\n'.format(wechat_name, send_msg))
 
         # 给群聊里发信息
@@ -208,7 +224,11 @@ def send_alarm_msg():
         if group_name:
             group = get_group(group_name)
             if group:
+                if send_image_path:
+                    group.send_image(send_image_path)
                 group.send(send_msg)
+                if joke:
+                    group.send(joke, toUserName=FILEHELPER)
                 print('定时给群聊『{}』发送的内容是:\n{}\n发送成功...\n\n'.format(group_name, send_msg))
 
     print('自动提醒消息发送完成...\n')

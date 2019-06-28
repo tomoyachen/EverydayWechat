@@ -29,10 +29,13 @@ def get_rttodayweather(cityname):
                     address = address.split(' ')[-1]
                 reportTime = data_dict['reportTime'].strip()
                 reportTime = reportTime.split(' ')[0]
+                '''
                 return_text = ' '.join(
                     x for x in [reportTime, address, data_dict['weather'], data_dict['temp'] + "\r\n",
                                 data_dict['windDirection'] + '风', data_dict['windPower'],
                                 '湿度：' + data_dict['humidity']] if x)
+                '''
+                return_text = "%s %s %s %s" %(reportTime, address, data_dict['weather'], data_dict['temp'])
                 # print(return_text)
                 return return_text
             else:
