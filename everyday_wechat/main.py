@@ -6,6 +6,8 @@
 """
 import os
 import time
+import threading
+import datetime
 # from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 import itchat
@@ -160,7 +162,7 @@ def text_reply(msg):
         uuid = FILEHELPER if msg['ToUserName'] == FILEHELPER else msg.fromUserName
         # 如果用户id是自动回复列表的人员
         if uuid in reply_userNames:
-            receive_text = msg.text  # 好友发送来的消息内容
+            receive_text = msg['Content']  # 好友发送来的消息内容
             # 好友叫啥
             nickName = FILEHELPER if uuid == FILEHELPER else msg.user.nickName
             print('\n{}发来信息：{}'.format(nickName, receive_text))
@@ -174,11 +176,46 @@ def text_reply(msg):
             elif reply_text:  # 如内容不为空，回复消息
                 reply_text = reply_text if not uuid == FILEHELPER else '机器人回复：' + reply_text
                 itchat.send(reply_text, toUserName=uuid)
+
                 print('回复{}：{}\n'.format(nickName, reply_text))
             else:
                 print('自动回复失败\n'.format(receive_text))
     except Exception as e:
         print(str(e))
+
+'''
+@itchat.msg_register([itchat.content.TEXT, itchat.content.PICTURE,itchat.content.RECORDING,itchat.content.ATTACHMENT,itchat.content.VIDEO],isFriendChat=True, isGroupChat=True)
+def auto_delay_reply(msg): #自动延时回复
+    try:
+        if not get_yaml().get('is_auto_relay'):
+            return
+        uuid = FILEHELPER if msg['ToUserName'] == FILEHELPER else msg.fromUserName
+        if uuid in reply_userNames:
+            receive_text = msg['Content']   # 好友发送来的消息内容
+            nickName = FILEHELPER if uuid == FILEHELPER else msg.user.nickName #昵称
+            print('\n{}发来信息：{}'.format(nickName, receive_text))
+            reply_text = "你好呀。我现在有事在身无法立刻回复，十分抱歉。"
+            print(datetime.datetime.now())
+            print("start")
+            auto_delay_reply_msg_timer(uuid)
+    except Exception as e:
+        print(str(e))
+
+
+def auto_delay_reply_msg_timer(uuid):
+    print(datetime.datetime.now())
+    global timer  # 定义变量
+    timer = threading.Timer(60, auto_delay_reply_msg,(uuid))  # 60秒调用一次函数
+    # 定时器构造函数主要有2个参数，第一个参数为时间，第二个参数为函数名
+    timer.start()  # 启用定时器
+
+
+def auto_delay_reply_msg(uuid):
+    print(datetime.datetime.now())
+    itchat.send("你好呀。我现在有事在身无法立刻回复，十分抱歉。", toUserName=uuid)
+    auto_delay_reply_msg_timer(uuid)
+'''
+
 
 
 def send_alarm_msg():

@@ -5,6 +5,7 @@
 
 import os
 import requests
+import threading
 from bs4 import BeautifulSoup
 
 SPIDER_HEADERS = {
@@ -12,50 +13,17 @@ SPIDER_HEADERS = {
                   'Chrome/67.0.3396.87 Safari/537.36',
 }
 
+def auto_delay_reply_msg():
+    print(datetime.datetime.now())
+    print("msg")
+    auto_delay_reply_msg_timer()
 
+def auto_delay_reply_msg_timer():
+    global timer  # 定义变量
+    timer = threading.Timer(5, auto_delay_reply_msg)  # 60秒调用一次函数
+    # 定时器构造函数主要有2个参数，第一个参数为时间，第二个参数为函数名
+    timer.start()  # 启用定时器
 
-def get_rttodayweather(cityname):
-    """
-    获取特定城市今日天气
-     https://github.com/MZCretin/RollToolsApi#获取特定城市今日天气
-    :param cityname: 传入你需要查询的城市，请尽量传入完整值，否则系统会自行匹配，可能会有误差
-    :return:天气(2019-06-12 星期三 晴 南风 3-4级 高温 22.0℃ 低温 18.0℃ 愿你拥有比阳光明媚的心情)
-    """
-    print('获取 {} 的天气...'.format(cityname))
-    try:
-        resp = requests.get('https://www.mxnzp.com/api/weather/current/{}'.format(cityname))
-        # print(resp.text)
-        '''
-        # {"code":1,"msg":"数据返回成功","data":{"address":"广西壮族自治区 桂林市 全州县",
-        # "cityCode":"450324","temp":"26℃","weather":"晴","windDirection":"东北","windPower":"≤3级",
-        # "humidity":"58%","reportTime":"2019-06-14 10:49:37"}}
-        '''
-        if resp.status_code == 200:
-            if resp.json()['code'] == 1:
-                data_dict = resp.json()['data']
-                address = data_dict['address'].strip()
-                if ' ' in address:
-                    address = address.split(' ')[-1]
-                reportTime = data_dict['reportTime'].strip()
-                reportTime = reportTime.split(' ')[0]
-                reportTime = reportTime.split('-')
-                reportTime = "%s年%s月%s日" %(reportTime[0], reportTime[1], reportTime[2])
-                '''
-                return_text = ' '.join(
-                    x for x in [reportTime, address, data_dict['weather'], data_dict['temp'] + "\r\n",
-                                data_dict['windDirection'] + '风', data_dict['windPower'],
-                                '湿度：' + data_dict['humidity']] if x)
-                '''
-                return_text = "%s %s %s %s" %(reportTime, address, data_dict['weather'], data_dict['temp'])
-                # print(return_text)
-                return return_text
-            else:
-                print('获取天气失败:{}'.format( resp.json()['msg']))
-                # return None
-        print('获取天气失败。')
-    except Exception as exception:
-        print(exception)
-        # return None
-    # return None
-
-print(get_rttodayweather("上海"))
+import datetime
+print(datetime.datetime.now())
+auto_delay_reply_msg_timer()
